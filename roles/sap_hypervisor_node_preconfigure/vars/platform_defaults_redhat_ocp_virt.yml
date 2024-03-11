@@ -18,7 +18,7 @@ sap_hypervisor_node_preconfigure_sriov_enable_unsupported_nics: true
 sap_hypervisor_node_preconfigure_hypervisor_reserved_ram_host_ge_512: 64 # GiB
 
 # Amount of memory [GiB] to be reserved for the hypervisor on hosts < 512GiB
-sap_hypervisor_node_preconfigure_hypervisor_reserved_ram_host_lt_512: 32 # GiB
+sap_hypervisor_node_preconfigure_hypervisor_reserved_ram_host_lt_512: 48 # GiB
 
 # Should the check for the minimal amount of be ignored? Minimal amount is 96 GiB
 sap_hypervisor_node_preconfigure_ignore_minimal_memory_check: false
