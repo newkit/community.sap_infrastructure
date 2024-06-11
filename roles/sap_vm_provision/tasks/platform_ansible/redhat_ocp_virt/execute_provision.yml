@@ -379,7 +379,46 @@
     # Virtual Disk volume definitions
     data_volume_templates: "{{ storage_disks_map + os_image }}"
 
-    spec: "{{ __sap_vm_provision_register_vm_deploy_config }}"
+    spec: #"{{ __sap_vm_provision_register_vm_deploy_config }}"
+      volumes: "{{ storage_disk_name_list + cloud_init_volume + downwardmetrics_volume }}"
+      networks: "{{ __sap_vm_provision_register_networks_definition }}"
+      domain:
+        # prevents live migration
+        # ioThreadsPolicy: auto
+        hostname: "{{ scaleout_origin_host_spec }}"
+        evictionStrategy: LiveMigrate
+        terminationGracePeriodSeconds: 1800 # 30 minutes after stop request before VM is force terminated
+        resources:
+          requests:
+            memory: "{{ (lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].kubevirt_vm_memory_gib) + 16 }}Gi" # Static 16GB DRAM overhead for container runtime
+
+        devices:
+          networkInterfaceMultiqueue: true
+          blockMultiQueue: true
+          autoattachMemBalloon: false
+          disks: "{{ storage_disk_list }}"
+          interfaces: "{{ __sap_vm_provision_register_network_interfaces }}"
+
+        cpu:
+          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
+          threads: 2
+          dedicatedCpuPlacement: true
+          model: host-passthrough
+          numa:
+            guestMappingPassthrough: {}
+          features:
+            - name: x2apic
+              policy: require
+            - name: rdtscp
+              policy: require
+            - name: invtsc
+              policy: require
+
+
+        memory:
+          guest: "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].kubevirt_vm_memory_gib }}Gi"
+          hugepages:
+            pageSize: 1Gi
 
 
 #        - name: bridgeif
