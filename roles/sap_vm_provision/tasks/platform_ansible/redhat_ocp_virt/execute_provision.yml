@@ -36,9 +36,6 @@
 - name: Print PVCs
   debug: var=__sap_vm_provision_register_os_pvc
 
-#- meta: end_play
-
-#XXX needs fixing
 - name: Set fact for download OS Image
   ansible.builtin.set_fact:
     os_image: |-
@@ -56,7 +53,7 @@
               'accessModes': ['ReadWriteMany'],
               'resources': {
                 'requests': {
-                  'storage': '50Gi'
+                  'storage': __sap_vm_provision_register_vm_config.os_image.size
                 }
               }
             }
@@ -83,6 +80,7 @@
               'accessModes': ['ReadWriteMany'],
               'resources': {
                 'requests': {
+                  'storage': __sap_vm_provision_register_vm_config.os_image.size
                 }
               }
             }
@@ -91,7 +89,6 @@
       ] -%}
       {{ disks_map }}
   when: __sap_vm_provision_register_vm_config.os_image_pvc is defined 
-# and __sap_vm_provision_register_vm_config.os_image_url is not defined
 
 - name: Debug print sap_vm_provision_host_specification_plan
   debug: var=sap_vm_provision_host_specification_plan
@@ -131,7 +128,6 @@
       {%- endfor %}
       {{ disks_map }}
 
-
 - name: Set fact for storage volumes attachment list
   ansible.builtin.set_fact:
     storage_disk_name_list: |-
@@ -175,22 +171,6 @@
         ]) %}
       {%- endfor %}
       {{ disks_simple_map }}
-
-# create 
-#           - bootOrder: 1
-#            disk:
-#              bus: virtio
-#            name: "{{scaleout_origin_host_spec + '-boot' | replace('_', '-')}}"
-#            io: native
-
-
-#          - disk:
-#              bus: virtio
-#            name: cloudinit
-#          - disk:
-#              bus: virtio
-#            name: downwardmetrics
-
 
 - name: Set fact for disk list
   ansible.builtin.set_fact:
@@ -257,16 +237,6 @@
       - downwardMetrics: {}
         name: downwardmetrics
 
-
-#        - name: sapbridge
-#          type: bridge
-#          networkName: sapbridge-network-definition
-#          model: virtio
-#        - name: banana
-#          type: sriov
-#          networkName: test
-
-
 - name: Set fact for network interfaces
   ansible.builtin.set_fact:
     __sap_vm_provision_register_network_interfaces: |-
@@ -281,16 +251,6 @@
         ]) %}
       {%- endfor %}
       {{ netifs }}
-
-#            - bridge: {}
-#              model: virtio
-#              name: bridgeif 
-
-
-#        - name: bridgeif
-#         multus:
-#           networkName: sapbridge-network-definition
-
 
 - name: Set fact for networks definition
   ansible.builtin.set_fact:
@@ -317,10 +277,6 @@
 - debug: var=K8S_AUTH_USERNAME
 - debug: var=K8S_AUTH_PASSWORD
 
-#- name: XXX TBR Login to ocp
-#  shell: "oc login -u {{K8S_AUTH_USERNAME}} -p {{K8S_AUTH_PASSWORD}} --server=https://api.hybrid.ocp.sap:6443"
-
-
 - name: Set fact for VM deploy config
   ansible.builtin.set_fact:
     __sap_vm_provision_register_vm_deploy_config:
@@ -332,13 +288,11 @@
         hostname: "{{ scaleout_origin_host_spec }}"
         evictionStrategy: LiveMigrate
         terminationGracePeriodSeconds: 1800 # 30 minutes after stop request before VM is force terminated
-
         resources:
           requests:
             memory: "{{ (lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].kubevirt_vm_memory_gib) + 16 }}Gi" # Static 16GB DRAM overhead for container runtime
 
         devices:
-
           networkInterfaceMultiqueue: true
           blockMultiQueue: true
           autoattachMemBalloon: false
@@ -346,10 +300,8 @@
           interfaces: "{{ __sap_vm_provision_register_network_interfaces }}"
 
         cpu:
-          cores: 4 #"{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
+          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
           threads: 2
-
-
           dedicatedCpuPlacement: true
           model: host-passthrough
           numa:

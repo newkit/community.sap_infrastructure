@@ -510,6 +510,7 @@ sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
         url: "docker://registry.redhat.io/rhel8/rhel-guest-image:8.9.0"
         name: "rhel-8.9"
         namespace: openshift-virtualization-os-images
+        size: "50Gi"
       network_definition:
         - name: sapbridge
           type: bridge
