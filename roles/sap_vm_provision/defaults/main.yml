@@ -498,7 +498,7 @@ sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
   example_host_specification_plan:
     lu0567: # Hostname, must be 13 characters or less
       # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
-      kubevirt_vm_cpu_smt: 2
+      kubevirt_vm_cpu_smt: 4
       kubevirt_vm_cpu_cores: 5
       kubevirt_vm_memory_gib: 24
       #sap_system_type: project_dev # project_dev, project_tst, project_prd
@@ -506,16 +506,15 @@ sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
 #      os_image_pvc: rhel-9.2.0
       os_image_pvc_namespace: openshift-virtualization-os-images
       os_image_url: "docker://registry.redhat.io/rhel8/rhel-guest-image:8.9.0"
+      os_image:
+        url: "docker://registry.redhat.io/rhel8/rhel-guest-image:8.9.0"
+        name: "rhel-8.9"
+        namespace: openshift-virtualization-os-images
       network_definition:
         - name: sapbridge
           type: bridge
           networkName: sapbridge-network-definition
           model: virtio
-#        - name: banana
-#          type: sriov
-#          model: virtio
-#          networkName: test
-
       storage_definition:
          - name: hana
            mountpoint: /hana

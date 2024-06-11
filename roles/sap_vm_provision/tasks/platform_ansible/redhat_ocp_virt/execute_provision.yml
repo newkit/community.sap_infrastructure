@@ -21,19 +21,20 @@
 - name: Debug print __sap_vm_provision_register_vm_config
   debug: var=__sap_vm_provision_register_vm_config
 
+- name: Get OS PVC 
+  kubernetes.core.k8s_info:
+    host: "{{ sap_vm_provision_ocp_endpoint }}"
+    api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
+    kubeconfig: "{{ sap_vm_provision_kubeconfig }}"
+    ca_cert: "{{ sap_vm_provision_ca_cert}}"
+    api_version: v1
+    kind: PersistentVolumeClaim
+    name: "{{ __sap_vm_provision_register_vm_config.os_image.name }}" 
+    namespace: "{{ __sap_vm_provision_register_vm_config.os_image.name }}"
+  register: __sap_vm_provision_register_os_pvc
 
-
-
-#- name: Get OS PVC
-#  kubernetes.core.k8s_info:
-#    api_version: v1
-#    kind: PersistentVolumeClaim
-#    name: "{{ __sap_vm_provision_register_vm_config.os_image }}" 
-#    namespace: openshift-virtualization-os-images
-#  register: __sap_vm_provision_register_os_pvc
-#
-#- name: Print PVCs
-#  debug: var=__sap_vm_provision_register_os_pvc
+- name: Print PVCs
+  debug: var=__sap_vm_provision_register_os_pvc
 
 #- meta: end_play
 
@@ -47,7 +48,7 @@
           'spec' : {
             'source' : {
               'registry' : {
-                'url': __sap_vm_provision_register_vm_config.os_image_url,
+                'url': __sap_vm_provision_register_vm_config.os_image.url,
                 'pullMethod': 'node'
               },
             },
@@ -55,7 +56,6 @@
               'accessModes': ['ReadWriteMany'],
               'resources': {
                 'requests': {
-                  'storage': '50Gi'
                 }
               }
             }
@@ -74,8 +74,8 @@
           'spec' : {
             'source' : {
               'pvc' : {
-                'name': __sap_vm_provision_register_vm_config.os_image_pvc,
-                'namespace': __sap_vm_provision_register_vm_config.os_image_pvc_namespace
+                'name': __sap_vm_provision_register_vm_config.os_image.name,
+                'namespace': __sap_vm_provision_register_vm_config.os_image.namespace
               },
             },
             'storage' : {
@@ -89,7 +89,8 @@
         }
       ] -%}
       {{ disks_map }}
-  when: __sap_vm_provision_register_vm_config.os_image_pvc is defined and __sap_vm_provision_register_vm_config.os_image_url is not defined
+  when: __sap_vm_provision_register_vm_config.os_image_pvc is defined 
+# and __sap_vm_provision_register_vm_config.os_image_url is not defined
 
 - name: Debug print sap_vm_provision_host_specification_plan
   debug: var=sap_vm_provision_host_specification_plan
