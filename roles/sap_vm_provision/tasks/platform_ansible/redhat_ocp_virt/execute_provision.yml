@@ -25,7 +25,7 @@
   kubernetes.core.k8s_info:
     host: "{{ sap_vm_provision_ocp_endpoint }}"
     api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
-    kubeconfig: "{{ sap_vm_provision_kubeconfig_path }}"
+    kubeconfig: "{{ sap_vm_provision_ocp_kubeconfig_path }}"
     ca_cert: "{{ sap_vm_provision_ca_cert}}"
     api_version: v1
     kind: PersistentVolumeClaim
@@ -312,7 +312,7 @@
   kubevirt.core.kubevirt_vm:
     host: "{{ sap_vm_provision_ocp_endpoint }}"
     api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
-    kubeconfig: "{{ sap_vm_provision_kubeconfig_path }}"
+    kubeconfig: "{{ sap_vm_provision_ocp_kubeconfig_path }}"
     ca_cert: "{{ sap_vm_provision_ca_cert}}"
     api_version: "{{ api_version | default(omit) }}"
     persist_config: "{{ persist_config | default(omit) }}"
@@ -339,10 +339,10 @@
   kubevirt.core.kubevirt_vm_info:
     host: "{{ sap_vm_provision_ocp_endpoint }}"
     api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
-    kubeconfig: "{{ sap_vm_provision_kubeconfig_path }}"
+    kubeconfig: "{{ sap_vm_provision_ocp_kubeconfig_path }}"
     ca_cert: "{{ sap_vm_provision_ca_cert}}"
     name: "{{ scaleout_origin_host_spec }}"
-    namespace: "{{ sap_vm_provision_kubevirt_target_namespace }}"
+    namespace: "{{ sap_vm_provision_ocp_target_namespace }}"
 
 - name: Print register_provisioned_host_single_info
   debug: var=register_provisioned_host_single_info
