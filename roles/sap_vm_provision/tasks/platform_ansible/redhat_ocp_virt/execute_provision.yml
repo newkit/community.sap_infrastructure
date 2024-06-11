@@ -39,7 +39,7 @@
 #- meta: end_play
 
 #XXX needs fixing
-- name: Set fact for downloaded OS Image
+- name: Set fact for download OS Image
   ansible.builtin.set_fact:
     os_image: |-
       {%- set disks_map = [
@@ -63,7 +63,7 @@
         }
       ] -%}
       {{ disks_map }}
-  when: __sap_vm_provision_register_vm_config.os_image_url is defined and __sap_vm_provision_register_vm_config.os_image_pvc is not defined
+  when: __sap_vm_provision_register_vm_config.os_image.url is defined and __sap_vm_provision_register_vm_config.os_image_pvc is not defined
 
 - name: Set fact for existing OS Image
   ansible.builtin.set_fact:
@@ -101,9 +101,8 @@
 - name: Debug print inventory_hostname
   debug: var=inventory_hostname
 
-
 - name: Debug print os_image_existing
-  debug: var=os_image_existing
+  debug: var=os_image
 
 - name: Set fact for storage volume template map
   ansible.builtin.set_fact:
