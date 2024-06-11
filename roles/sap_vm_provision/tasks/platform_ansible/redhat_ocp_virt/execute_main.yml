@@ -11,9 +11,9 @@
 #    persist_config: "{{ default(lookup('env', 'K8S_AUTH_PERSIST_CONFIG')) | default(true) }}"
 #    host: "{{ sap_vm_provision_kubevirt_cluster_url | default(lookup('env', 'K8S_AUTH_HOST')) | default(omit) }}" # Target Hypervisor Node
 
-#- name: Set fact for auth - Kubeconfig
-#  ansible.builtin.set_fact:
-#    kubeconfig: "{{ sap_vm_provision_kubevirt_kubeconfig_path | default(lookup('env', 'K8S_AUTH_KUBECONFIG')) | default(lookup('env', 'KUBECONFIG')) | default(omit) }}"
+- name: Set fact for auth - Kubeconfig
+  ansible.builtin.set_fact:
+    kubeconfig: "{{ sap_vm_provision_kubevirt_kubeconfig_path | default(lookup('env', 'K8S_AUTH_KUBECONFIG')) | default(lookup('env', 'KUBECONFIG')) | default(omit) }}"
 
 #- name: Set fact for auth - API Key
 #  ansible.builtin.set_fact:
