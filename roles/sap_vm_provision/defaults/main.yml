@@ -501,38 +501,38 @@ sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
           networkName: sapbridge-network-definition
           model: virtio
       storage_definition:
-         - name: hana
-           mountpoint: /hana
-           disk_count: 1                  # default: 1
-           disk_size: 2048                 # size in GB, integer
-           disk_type: nas                 # KubeVirt Storage Class
+        - name: hana
+          mountpoint: /hana
+          disk_count: 1                  # default: 1
+          disk_size: 2048                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
       cloudinit:
-          userData: |-
-            #cloud-config
-            timezone: Europe/Berlin
-            hostname: "{{ scaleout_origin_host_spec }}"
-            user: {{ sap_vm_provision_kubevirt_os_user if sap_vm_provision_kubevirt_os_user is defined }}
-            password: {{ sap_vm_provision_kubevirt_os_user_password if sap_vm_provision_kubevirt_os_user_password is defined }}
-            chpasswd:
-              expire: false
-            ssh_authorized_keys:
-              - "{{ lookup('ansible.builtin.file', sap_vm_provision_ssh_host_public_key_file_path ) }}"
-          networkData: |-
-            network:
-              version: 1
-              config:
-                - type: physical
-                  name: eth0
-                  subnets:
-                    - type: static
-                      address: 10.76.34.72/23
-                      gateway: 10.76.34.1
-                - type: nameserver
-                  address:
-                    - 10.17.122.10
-                    - 10.17.121.30
-                  search:
-                    - wdf.sap.corp
+        userData: |-
+          #cloud-config
+          timezone: Europe/Berlin
+          hostname: "{{ scaleout_origin_host_spec }}"
+          user: {{ sap_vm_provision_ocp_os_user if sap_vm_provision_ocp_os_user is defined }}
+          password: {{ sap_vm_provision_ocp_os_user_password if sap_vm_provision_ocp_os_user_password is defined }}
+          chpasswd:
+            expire: false
+          ssh_authorized_keys:
+            - "{{ lookup('ansible.builtin.file', sap_vm_provision_ssh_host_public_key_file_path ) }}"
+        networkData: |-
+          network:
+            version: 1
+            config:
+              - type: physical
+                name: eth0
+                subnets:
+                  - type: static
+                    address: 10.76.34.72/23
+                    gateway: 10.76.34.1
+              - type: nameserver
+                address:
+                  - 10.17.122.10
+                  - 10.17.121.30
+                search:
+                  - wdf.sap.corp
 
 
     lu0569: # Hostname, must be 13 characters or less
@@ -548,38 +548,38 @@ sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
         namespace: openshift-virtualization-os-images
         size: "50Gi"
       storage_definition:
-         - name: hana
-           mountpoint: /hana
-           disk_count: 1                  # default: 1
-           disk_size: 2048                 # size in GB, integer
-           disk_type: nas                 # KubeVirt Storage Class
+        - name: hana
+          mountpoint: /hana
+          disk_count: 1                  # default: 1
+          disk_size: 2048                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
       cloudinit:
-          userData: |-
-            #cloud-config
-            timezone: Europe/Berlin
-            hostname: "{{ scaleout_origin_host_spec }}"
-            user: {{ sap_vm_provision_kubevirt_os_user if sap_vm_provision_kubevirt_os_user is defined }}
-            password: {{ sap_vm_provision_kubevirt_os_user_password if sap_vm_provision_kubevirt_os_user_password is defined }}
-            chpasswd:
-              expire: false
-            ssh_authorized_keys:
-              - "{{ lookup('ansible.builtin.file', sap_vm_provision_ssh_host_public_key_file_path ) }}"
-          networkData: |-
-            network:
-              version: 1
-              config:
-                - type: physical
-                  name: eth0
-                  subnets:
-                    - type: static
-                      address: 10.76.34.74/23
-                      gateway: 10.76.34.1
-                - type: nameserver
-                  address:
-                    - 10.17.122.10
-                    - 10.17.121.30
-                  search:
-                    - wdf.sap.corp
+        userData: |-
+          #cloud-config
+          timezone: Europe/Berlin
+          hostname: "{{ scaleout_origin_host_spec }}"
+          user: {{ sap_vm_provision_ocp_os_user if sap_vm_provision_ocp_os_user is defined }}
+          password: {{ sap_vm_provision_ocp_os_user_password if sap_vm_provision_ocp_os_user_password is defined }}
+          chpasswd:
+            expire: false
+          ssh_authorized_keys:
+            - "{{ lookup('ansible.builtin.file', sap_vm_provision_ssh_host_public_key_file_path ) }}"
+        networkData: |-
+          network:
+            version: 1
+            config:
+              - type: physical
+                name: eth0
+                subnets:
+                  - type: static
+                    address: 10.76.34.74/23
+                    gateway: 10.76.34.1
+              - type: nameserver
+                address:
+                  - 10.17.122.10
+                  - 10.17.121.30
+                search:
+                  - wdf.sap.corp
 
 # OVirt
 sap_vm_provision_ovirt_vm_boot_menu: false
