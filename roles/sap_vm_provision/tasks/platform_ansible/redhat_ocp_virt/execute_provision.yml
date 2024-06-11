@@ -369,10 +369,10 @@
     ## Virtual Machine definition
     state: present
     running: true
-    wait: true  # ensure Virtual Machine in ready state before exiting Ansible Task
-    wait_sleep: 30  # 30 second poll for ready state
-    wait_timeout: 600  # 10 minute wait for ready state
-    force: false  # Do not replace existing Virtual Machine with same name
+    wait: false  # ensure Virtual Machine in ready state before exiting Ansible Task
+#    wait_sleep: 30  # 30 second poll for ready state
+#    wait_timeout: 600  # 10 minute wait for ready state
+    force: true  # Do not replace existing Virtual Machine with same name
     name: "{{ scaleout_origin_host_spec }}"
     labels:
       app: "{{ scaleout_origin_host_spec }}"
@@ -466,6 +466,10 @@
 - name: Check VM status
   register: register_provisioned_host_single_info
   kubevirt.core.kubevirt_vm_info:
+    host: "{{ sap_vm_provision_ocp_endpoint }}"
+    api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
+    kubeconfig: "{{ sap_vm_provision_kubeconfig }}"
+    ca_cert: "{{ sap_vm_provision_ca_cert}}"
     name: "{{ scaleout_origin_host_spec }}"
     namespace: "{{ sap_vm_provision_kubevirt_target_namespace }}"
 
