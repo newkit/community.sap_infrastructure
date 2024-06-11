@@ -269,9 +269,9 @@
 #- name: print network
 #  debug: var=__sap_vm_provision_register_network_interfaces, __sap_vm_provision_register_networks_definition
 
-#- name: Set fact for kubevirt_vm_cpu_cores
-#  ansible.builtin.set_fact:
-#    kubevirt_vm_cpu_cores: 2
+- name: Set fact for kubevirt_vm_cpu_cores
+  ansible.builtin.set_fact:
+    kubevirt_vm_cpu_cores: 2
 
 - debug: var=sap_vm_provision_kubeconfig
 - debug: var=K8S_AUTH_USERNAME
@@ -300,7 +300,8 @@
           interfaces: "{{ __sap_vm_provision_register_network_interfaces }}"
 
         cpu:
-          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
+          cores: "{{ kubevirt_vm_cpu_cores | int }}"
+#          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
           threads: 2
           dedicatedCpuPlacement: true
           model: host-passthrough
@@ -400,7 +401,8 @@
           interfaces: "{{ __sap_vm_provision_register_network_interfaces }}"
 
         cpu:
-          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
+          cores: "{{ kubevirt_vm_cpu_cores | int }}"
+#          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
           threads: 2
           dedicatedCpuPlacement: true
           model: host-passthrough
