@@ -290,7 +290,7 @@
     persist_config: "{{ persist_config | default(omit) }}"
 
     ## Virtual Machine target Hypervisor definition
-    namespace: "{{ sap_vm_provision_kubevirt_target_namespace }}" # Target namespace
+    namespace: "{{ sap_vm_provision_ocp_target_namespace }}" # Target namespace
 
     ## Virtual Machine definition
     state: present

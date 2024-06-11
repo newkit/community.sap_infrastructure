@@ -480,19 +480,6 @@ sap_vm_provision_kubevirt_vm_host_specifications_dictionary:
           disk_size: 512                 # size in GB, integer
           disk_type: nas                 # KubeVirt Storage Class
 
-
-#          interfaces:
-#            - bridge: {}
-#              model: virtio
-#              name: bridgeif
-#
-#
-#      networks:
-#        - name: bridgeif
-#          multus:
-#            networkName: sapbridge-network-definition
-
-
 # Red Hat OCPv
 sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
   example_host_specification_plan:
@@ -503,9 +490,6 @@ sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
       kubevirt_vm_memory_gib: 24
       #sap_system_type: project_dev # project_dev, project_tst, project_prd
       sap_host_type: hana_primary # hana_primary, hana_secondary, anydb_primary, anydb_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-#      os_image_pvc: rhel-9.2.0
-      os_image_pvc_namespace: openshift-virtualization-os-images
-      os_image_url: "docker://registry.redhat.io/rhel8/rhel-guest-image:8.9.0"
       os_image:
         url: "docker://registry.redhat.io/rhel8/rhel-guest-image:8.9.0"
         name: "rhel-8.9"
@@ -558,7 +542,11 @@ sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
       kubevirt_vm_memory_gib: 1024
       #sap_system_type: project_dev # project_dev, project_tst, project_prd
       sap_host_type: hana_primary # hana_primary, hana_secondary, anydb_primary, anydb_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      os_image: rhel-9.2.0
+      os_image:
+        url: "docker://registry.redhat.io/rhel8/rhel-guest-image:8.9.0"
+        name: "rhel-8.9"
+        namespace: openshift-virtualization-os-images
+        size: "50Gi"
       storage_definition:
          - name: hana
            mountpoint: /hana
@@ -592,9 +580,6 @@ sap_vm_provision_redhat_ocp_virt_host_specifications_dictionary:
                     - 10.17.121.30
                   search:
                     - wdf.sap.corp
-
-
-
 
 # OVirt
 sap_vm_provision_ovirt_vm_boot_menu: false

@@ -1,0 +1,19 @@
+---
+
+- name: Ansible Play to run sap_vm_provision Ansible Role
+  hosts: all
+  gather_facts: true
+  serial: 1
+
+  vars:
+    sap_vm_provision_iac_type: ansible
+    sap_vm_provision_iac_platform: redhat_ocp_virt 
+    sap_vm_provision_host_specification_plan: example_host_specification_plan
+
+  environment:
+    ANSIBLE_JINJA2_NATIVE: true
+
+  tasks:
+    - name: Include sap_vm_provision Ansible Role
+      ansible.builtin.include_role:
+        name: sap_vm_provision
