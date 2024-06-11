@@ -300,9 +300,9 @@
           interfaces: "{{ __sap_vm_provision_register_network_interfaces }}"
 
         cpu:
-          cores: "{{ kubevirt_vm_cpu_cores | int }}"
-#          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
-          threads: 2
+#          cores: "{{ kubevirt_vm_cpu_cores | int }}"
+          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
+          threads: "{{ __sap_vm_provision_register_vm_config.kubevirt_cpu_smt | int }}"
           dedicatedCpuPlacement: true
           model: host-passthrough
           numa:
@@ -314,7 +314,6 @@
               policy: require
             - name: invtsc
               policy: require
-
 
         memory:
           guest: "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].kubevirt_vm_memory_gib }}Gi"
@@ -369,99 +368,16 @@
     ## Virtual Machine definition
     state: present
     running: true
-    wait: false  # ensure Virtual Machine in ready state before exiting Ansible Task
-#    wait_sleep: 30  # 30 second poll for ready state
-#    wait_timeout: 600  # 10 minute wait for ready state
-    force: true  # Do not replace existing Virtual Machine with same name
+    wait: true  # ensure Virtual Machine in ready state before exiting Ansible Task
+    wait_sleep: 30  # 30 second poll for ready state
+    wait_timeout: 600  # 10 minute wait for ready state
+    force: false  # Do not replace existing Virtual Machine with same name
     name: "{{ scaleout_origin_host_spec }}"
     labels:
       app: "{{ scaleout_origin_host_spec }}"
-
     # Virtual Disk volume definitions
     data_volume_templates: "{{ storage_disks_map + os_image }}"
-
-    spec: #"{{ __sap_vm_provision_register_vm_deploy_config }}"
-      volumes: "{{ storage_disk_name_list + cloud_init_volume + downwardmetrics_volume }}"
-      networks: "{{ __sap_vm_provision_register_networks_definition }}"
-      domain:
-        # prevents live migration
-        # ioThreadsPolicy: auto
-        hostname: "{{ scaleout_origin_host_spec }}"
-        evictionStrategy: LiveMigrate
-        terminationGracePeriodSeconds: 1800 # 30 minutes after stop request before VM is force terminated
-        resources:
-          requests:
-            memory: "{{ (lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].kubevirt_vm_memory_gib) + 16 }}Gi" # Static 16GB DRAM overhead for container runtime
-
-        devices:
-          networkInterfaceMultiqueue: true
-          blockMultiQueue: true
-          autoattachMemBalloon: false
-          disks: "{{ storage_disk_list }}"
-          interfaces: "{{ __sap_vm_provision_register_network_interfaces }}"
-
-        cpu:
-          cores: "{{ kubevirt_vm_cpu_cores | int }}"
-#          cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
-          threads: 2
-          dedicatedCpuPlacement: true
-          model: host-passthrough
-          numa:
-            guestMappingPassthrough: {}
-          features:
-            - name: x2apic
-              policy: require
-            - name: rdtscp
-              policy: require
-            - name: invtsc
-              policy: require
-
-
-        memory:
-          guest: "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].kubevirt_vm_memory_gib }}Gi"
-          hugepages:
-            pageSize: 1Gi
-
-
-#        - name: bridgeif
-#          multus:
-#            networkName: sapbridge-network-definition
-
-#------------------------------------------------------------------------------------------------------------------------------
-
-
-
-#------------------------------------------------------------------------------------------------------------------------------
-#          cores: "{{ (lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].kubevirt_vm_cpu_cores) }}"
-#          threads: "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].kubevirt_vm_cpu_smt }}"
-#          dedicatedCpuPlacement: true
-#          isolateEmulatorThread: true
-#          model: host-passthrough
-#          numa:
-#            guestMappingPassthrough: {}
-#          features:
-#            - name: x2apic
-#              policy: require
-#            - name: rdtscp
-#              policy: require
-#            - name: invtsc
-#              policy: require
-
-
-# TBD
-#      networks:
-#        - name: bridge-network-definition
-#          multus:
-#            networkName: iface-bridge-sriov
-#        - name: storage-network-definition
-#          multus:
-#            networkName: iface-storage-sriov
-#        - name: multi-network-definition
-#          multus:
-#            networkName: iface-multi-sriov
-
-      #volumes: "{{ storage_disk_name_list + cloud_init_volume }}"
-
+    spec: "{{ __sap_vm_provision_register_vm_deploy_config }}"
 
 - name: Check VM status
   register: register_provisioned_host_single_info
@@ -480,19 +396,18 @@
 #  ansible.builtin.set_fact:
 #    provisioned_private_ip: "{{ register_provisioned_host_single_info.spec.UNKNOWN_VARIABLE_FOR_PRIVATE_IP_HERE }}"
 
-
-- name: Collect only facts about hardware
-  register: host_disks_info
-  ansible.builtin.setup:
-    gather_subset:
-      - hardware
-  remote_user: root
-  become: true
-  become_user: root
-  delegate_to: "{{ provisioned_private_ip }}"
-  delegate_facts: false
-  vars:
-    ansible_ssh_private_key_file: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
+#- name: Collect only facts about hardware
+#  register: host_disks_info
+#  ansible.builtin.setup:
+#    gather_subset:
+#      - hardware
+#  remote_user: root
+#  become: true
+#  become_user: root
+#  delegate_to: "{{ provisioned_private_ip }}"
+#  delegate_facts: false
+#  vars:
+#    ansible_ssh_private_key_file: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
 
 #- name: Output disks
 #  ansible.builtin.debug:
@@ -509,4 +424,4 @@
 #
 #- name: Append output to merged register
 #  ansible.builtin.set_fact:
-    register_provisioned_host_all: "{{ register_provisioned_host_all + [register_provisioned_host_single] }}"
+#    register_provisioned_host_all: "{{ register_provisioned_host_all + [register_provisioned_host_single] }}"
