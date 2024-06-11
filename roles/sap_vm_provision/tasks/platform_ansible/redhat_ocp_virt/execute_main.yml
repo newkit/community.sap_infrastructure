@@ -4,8 +4,8 @@
     host: "{{ sap_vm_provision_ocp_endpoint }}"
     username: "{{ sap_vm_provision_ocp_admin_username }}"
     password: "{{ sap_vm_provision_ocp_admin_password }}"
-    ca_cert: "{{ sap_vm_provision_ca_cert }}"
-  register: __sap_vm_provision_register_openshift_auth_results
+    ca_cert: "{{ sap_vm_provision_ocp_ca_cert }}"
+  register: __sap_vm_provision_register_ocp_auth_results
 
 - name: Provision hosts to OpenShift
   register: register_provisioned_hosts

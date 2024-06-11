@@ -18,23 +18,17 @@
   ansible.builtin.set_fact:
     __sap_vm_provision_register_vm_config: "{{ (lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][__sap_vm_provision_register_vm_name]) }}"
 
-- name: Debug print __sap_vm_provision_register_vm_config
-  debug: var=__sap_vm_provision_register_vm_config
-
-- name: Get OS PVC 
+- name: Get OS PVC
   kubernetes.core.k8s_info:
     host: "{{ sap_vm_provision_ocp_endpoint }}"
-    api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
+    api_key: "{{ __sap_vm_provision_register_ocp_auth_results.openshift_auth.api_key }}"
     kubeconfig: "{{ sap_vm_provision_ocp_kubeconfig_path }}"
     ca_cert: "{{ sap_vm_provision_ocp_ca_cert}}"
     api_version: v1
     kind: PersistentVolumeClaim
-    name: "{{ __sap_vm_provision_register_vm_config.os_image.name }}" 
+    name: "{{ __sap_vm_provision_register_vm_config.os_image.name }}"
     namespace: "{{ __sap_vm_provision_register_vm_config.os_image.name }}"
   register: __sap_vm_provision_register_os_pvc
-
-- name: Print PVCs
-  debug: var=__sap_vm_provision_register_os_pvc
 
 - name: Set fact for download OS Image
   ansible.builtin.set_fact:
@@ -88,19 +82,7 @@
         }
       ] -%}
       {{ disks_map }}
-  when: __sap_vm_provision_register_vm_config.os_image_pvc is defined 
-
-- name: Debug print sap_vm_provision_host_specification_plan
-  debug: var=sap_vm_provision_host_specification_plan
-
-- name: Debug print scaleout_origin_host_spec
-  debug: var=scaleout_origin_host_spec
-
-- name: Debug print inventory_hostname
-  debug: var=inventory_hostname
-
-- name: Debug print os_image_existing
-  debug: var=os_image
+  when: __sap_vm_provision_register_vm_config.os_image_pvc is defined
 
 - name: Set fact for storage volume template map
   ansible.builtin.set_fact:
@@ -213,16 +195,6 @@
       {%- endfor %}
       {{ disks_list_simple }}
 
-
-- name: Debug print storage_disk_name_list
-  debug: var=storage_disk_name_list
-
-- name: Debug print storage_disks_map
-  debug: var=storage_disks_map
-
-- name: Debug print storage_disks_list
-  debug: var=storage_disk_list
-
 - name: Set fact for cloud-init volume
   ansible.builtin.set_fact:
     cloud_init_volume:
@@ -311,7 +283,7 @@
 - name: Provision KubeVirt Virtual Machine
   kubevirt.core.kubevirt_vm:
     host: "{{ sap_vm_provision_ocp_endpoint }}"
-    api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
+    api_key: "{{ __sap_vm_provision_register_ocp_auth_results.openshift_auth.api_key }}"
     kubeconfig: "{{ sap_vm_provision_ocp_kubeconfig_path }}"
     ca_cert: "{{ sap_vm_provision_ocp_ca_cert}}"
     api_version: "{{ api_version | default(omit) }}"
@@ -338,45 +310,8 @@
   register: register_provisioned_host_single_info
   kubevirt.core.kubevirt_vm_info:
     host: "{{ sap_vm_provision_ocp_endpoint }}"
-    api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
+    api_key: "{{ __sap_vm_provision_register_ocp_auth_results.openshift_auth.api_key }}"
     kubeconfig: "{{ sap_vm_provision_ocp_kubeconfig_path }}"
     ca_cert: "{{ sap_vm_provision_ocp_ca_cert}}"
     name: "{{ scaleout_origin_host_spec }}"
     namespace: "{{ sap_vm_provision_ocp_target_namespace }}"
-
-- name: Print register_provisioned_host_single_info
-  debug: var=register_provisioned_host_single_info
-
-#- name: Create fact for delegate host IP
-#  ansible.builtin.set_fact:
-#    provisioned_private_ip: "{{ register_provisioned_host_single_info.spec.UNKNOWN_VARIABLE_FOR_PRIVATE_IP_HERE }}"
-
-#- name: Collect only facts about hardware
-#  register: host_disks_info
-#  ansible.builtin.setup:
-#    gather_subset:
-#      - hardware
-#  remote_user: root
-#  become: true
-#  become_user: root
-#  delegate_to: "{{ provisioned_private_ip }}"
-#  delegate_facts: false
-#  vars:
-#    ansible_ssh_private_key_file: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
-
-#- name: Output disks
-#  ansible.builtin.debug:
-#    var: hostvars[inventory_hostname].ansible_devices.keys() | list
-
-#- name: Debug Ansible Facts devices used list
-#  ansible.builtin.debug:
-#    msg: "{{ host_disks_info.ansible_facts.ansible_device_links.ids.keys() | list }}"
-
-
-#- name: Append loop value to register
-#  ansible.builtin.set_fact:
-#    register_provisioned_host_single: "{{ register_provisioned_host_single_info.spec.UKNOWN_VARIABLE_HERE | combine( { 'host_node' : inventory_hostname } , { 'sap_host_type' : lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].sap_host_type } , { 'sap_system_type' : (lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][scaleout_origin_host_spec | default(inventory_hostname)].sap_system_type | default('')) } ) }}"
-#
-#- name: Append output to merged register
-#  ansible.builtin.set_fact:
-#    register_provisioned_host_all: "{{ register_provisioned_host_all + [register_provisioned_host_single] }}"
