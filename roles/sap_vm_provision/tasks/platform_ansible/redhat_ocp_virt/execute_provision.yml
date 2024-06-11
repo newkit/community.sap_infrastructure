@@ -266,16 +266,10 @@
       {%- endfor %}
       {{ networks }}
 
-#- name: print network
-#  debug: var=__sap_vm_provision_register_network_interfaces, __sap_vm_provision_register_networks_definition
-
-- name: Set fact for kubevirt_vm_cpu_cores
-  ansible.builtin.set_fact:
-    kubevirt_vm_cpu_cores: 2
-
 - debug: var=sap_vm_provision_kubeconfig
 - debug: var=K8S_AUTH_USERNAME
 - debug: var=K8S_AUTH_PASSWORD
+- debug: var=kubeconfig
 
 - name: Set fact for VM deploy config
   ansible.builtin.set_fact:
@@ -300,7 +294,6 @@
           interfaces: "{{ __sap_vm_provision_register_network_interfaces }}"
 
         cpu:
-#          cores: "{{ kubevirt_vm_cpu_cores | int }}"
           cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
           threads: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_smt | int }}"
           dedicatedCpuPlacement: true
@@ -357,7 +350,7 @@
   kubevirt.core.kubevirt_vm:
     host: "{{ sap_vm_provision_ocp_endpoint }}"
     api_key: "{{ __sap_vm_provision_register_openshift_auth_results.openshift_auth.api_key }}"
-    kubeconfig: "{{ sap_vm_provision_kubeconfig }}"
+#    kubeconfig: "{{ sap_vm_provision_kubeconfig }}"
     ca_cert: "{{ sap_vm_provision_ca_cert}}"
     api_version: "{{ api_version | default(omit) }}"
     persist_config: "{{ persist_config | default(omit) }}"
