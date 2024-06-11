@@ -364,7 +364,7 @@
     wait: true  # ensure Virtual Machine in ready state before exiting Ansible Task
     wait_sleep: 30  # 30 second poll for ready state
     wait_timeout: 600  # 10 minute wait for ready state
-    force: false  # Do not replace existing Virtual Machine with same name
+    force: "{{ sap_vm_provision_overwrite_vm | default(false) }}"  # Do not replace existing Virtual Machine with same name
     name: "{{ scaleout_origin_host_spec }}"
     labels:
       app: "{{ scaleout_origin_host_spec }}"
