@@ -302,7 +302,7 @@
         cpu:
 #          cores: "{{ kubevirt_vm_cpu_cores | int }}"
           cores: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_cores | int }}"
-          threads: "{{ __sap_vm_provision_register_vm_config.kubevirt_cpu_smt | int }}"
+          threads: "{{ __sap_vm_provision_register_vm_config.kubevirt_vm_cpu_smt | int }}"
           dedicatedCpuPlacement: true
           model: host-passthrough
           numa:
