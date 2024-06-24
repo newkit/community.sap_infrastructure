@@ -10,11 +10,25 @@
   ignore_errors: true
   register: __sap_hypervisor_node_preconfigure_register_uninstall_trident
   changed_when: __sap_hypervisor_node_preconfigure_register_uninstall_trident.rc != 0
+  environment:
+    KUBECONFIG: "{{ sap_hypervisor_node_preconfigure_ocp_kubeconfig_path }}"
+    K8S_AUTH_HOST: "{{ sap_hypervisor_node_preconfigure_ocp_endpoint }}"
+    K8S_AUTH_API_KEY: "{{ __sap_vm_provision_register_ocp_auth_results.openshift_auth.api_key }}"
+    K8S_AUTH_SSL_CA_CERT: "{{ sap_hypervisor_node_preconfigure_ocp_ca_cert }}"
+    K8S_AUTH_USERNAME: "{{ sap_hypervisor_node_preconfigure_ocp_admin_username }}"
+    K8S_AUTH_PASSWORD: "{{ sap_hypervisor_node_preconfigure_ocp_admin_password }}"
 
 - name: Install trident
   ansible.builtin.command: "{{ __sap_hypervisor_node_preconfigure_register_tmpdir.path }}/trident-installer/tridentctl install -n trident"
   register: __sap_hypervisor_node_preconfigure_register_install_trident
   changed_when: __sap_hypervisor_node_preconfigure_register_install_trident.rc != 0
+  environment:
+    KUBECONFIG: "{{ sap_hypervisor_node_preconfigure_ocp_kubeconfig_path }}"
+    K8S_AUTH_HOST: "{{ sap_hypervisor_node_preconfigure_ocp_endpoint }}"
+    K8S_AUTH_API_KEY: "{{ __sap_vm_provision_register_ocp_auth_results.openshift_auth.api_key }}"
+    K8S_AUTH_SSL_CA_CERT: "{{ sap_hypervisor_node_preconfigure_ocp_ca_cert }}"
+    K8S_AUTH_USERNAME: "{{ sap_hypervisor_node_preconfigure_ocp_admin_username }}"
+    K8S_AUTH_PASSWORD: "{{ sap_hypervisor_node_preconfigure_ocp_admin_password }}"
 
 - name: Copy backend file
   ansible.builtin.template:

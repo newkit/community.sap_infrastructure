@@ -45,7 +45,6 @@ All hosts for SAP Software on a target Hypervisor.
 **Dependencies:**
 - OS Packages
   - Python 3.9.7+ (i.e. CPython distribution)
-  - Red Hat OpenShift CLI Client (`oc` binary)
 - Python Packages:
     - `kubernetes` 29.0.0+
 - Ansible
