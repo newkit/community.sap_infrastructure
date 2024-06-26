@@ -100,6 +100,31 @@ See below for the drop-down list of required environment resources on an Infrast
 </details>
 
 <details>
+<summary><b>Red Hat OpenShift Virtualization</b></summary>
+
+- IMPORTANT: The playbook has to run with the environment variable `ANSIBLE_JINJA2_NATIVE=true` otherwise you will see an unmarshalling error when the VM is created. On Ansible Automation Platform Controller (AAPC) you have to set this in Settings --> Job Settings --> Extra Environment Variables, e.g.
+```
+{
+  "ANSIBLE_JINJA2_NATIVE": "true",
+  "HOME": "/var/lib/awx"
+}
+```
+- Kubeconfig, CA Cert, kubeadmin user and password, OpenShift API endpoint. To extract the CA Cert from the kubeconfig, you can use
+```
+grep client-certificate-data ${KUBECONFIG} | awk '{ print $2 }' | base64 --decode > client-cert.pem
+```
+- SSH Key Pair for VMs or provide a password
+  - `sap_vm_provision_ocp_guest_ssh_auth_mechanism`: Authentication mechanism to be used to connect to the guest. Possible options are:
+    - `password`: Make sure to set password in `sap_vm_provision_ocp_os_user_password`.
+    - `private_key`: Use the private ssh key at the location defined by `sap_vm_provision_ssh_host_private_key_file_path`.
+    - `private_key_data`: use the private ssh key provided in `sap_vm_provision_ssh_host_private_key_data` and write it to the location defined in `sap_vm_provision_ssh_host_private_key_file_path`.
+
+- Optional: Jumphost with access to OpenShift cluster. 
+    - Make sure the jumphost has all the the above mentioned credentials.
+
+</details>
+
+<details>
 <summary><b>KubeVirt:</b></summary>
 
 - `TODO`
